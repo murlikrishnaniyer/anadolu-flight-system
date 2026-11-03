@@ -28,9 +28,9 @@ services:
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "2181"]
       interval: 10s
-      timeout: 5s
+      timeout: 20s
       retries: 5
-      start_period: 10s
+      start_period: 60s
 
   # Kafka Broker
   kafka:
@@ -44,6 +44,12 @@ services:
       - "9092:9092"
       - "29092:29092"
     environment:
+      # Heap memory allocation - prevents GC pauses that kill ZK sessions
+      KAFKA_HEAP_OPTS: "-Xms512m -Xmx512m"
+      
+      # Skip preflight ZK healthcheck (reduces log noise from repeated timeout attempts)
+      KAFKA_SKIP_PREFLIGHT_CHECKS: "1"
+      
       # Broker ID: -1 = auto-generate unique ID (prevents NodeExistsException)
       KAFKA_BROKER_ID: -1
       # Alternative: Use KAFKA_BROKER_ID_GENERATION_ENABLE for auto-generation
@@ -52,8 +58,8 @@ services:
 
       # Zookeeper connection with session timeout
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ZOOKEEPER_SESSION_TIMEOUT_MS: 18000
-      KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS: 18000
+      KAFKA_ZOOKEEPER_SESSION_TIMEOUT_MS: 300000
+      KAFKA_ZOOKEEPER_CONNECTION_TIMEOUT_MS: 30000
 
       # Listeners
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
@@ -92,9 +98,9 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server localhost:9092 || exit 1"]
       interval: 10s
-      timeout: 10s
+      timeout: 15s
       retries: 10
-      start_period: 30s
+      start_period: 60s
     # Production: Graceful shutdown
     stop_grace_period: 30s
 

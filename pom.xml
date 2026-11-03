@@ -37,7 +37,7 @@
 
         <!-- Dependency versions -->
         <spring-cloud.version>2023.0.0</spring-cloud.version>
-        <lombok.version>1.18.30</lombok.version>
+        <lombok.version>1.18.48</lombok.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
         <resilience4j.version>2.2.0</resilience4j.version>
         <micrometer-tracing.version>1.2.2</micrometer-tracing.version>
